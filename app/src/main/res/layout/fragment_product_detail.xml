@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="com.sephora.happyshop.ui.product.ProductDetailFragment"
+    tools:showIn="@layout/activity_product_detail">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:background="#8fcccccc"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Product Name"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/addCardButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#d28671"
+        android:text="Add to Cart"
+        android:textColor="#ffffff"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Description are here"/>
+</LinearLayout>
