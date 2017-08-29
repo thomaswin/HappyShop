@@ -14,19 +14,24 @@
  *  limitations under the License.
  */
 
-package com.sephora.happyshop.service;
+package com.sephora.happyshop;
 
-import com.sephora.happyshop.data.Product;
-import com.sephora.happyshop.data.source.LoadDataCallback;
+import android.app.Application;
 
 /**
- * Created by Thomas Win on 29/8/17.
+ * Created by Tun Lin on 8/29/17.
  */
 
-public class CartManager {
+public class MainApplication extends Application {
 
-    public void getProductInCart(LoadDataCallback<Product> callback) {
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+    }
 }

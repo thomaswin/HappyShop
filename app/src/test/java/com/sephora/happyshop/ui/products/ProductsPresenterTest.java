@@ -14,18 +14,16 @@
  *  limitations under the License.
  */
 
-package com.sephora.happyshop.service;
+package com.sephora.happyshop.ui.products;
 
-import com.sephora.happyshop.data.Product;
-import com.sephora.happyshop.data.source.LoadDataCallback;
+import org.junit.Test;
 
 /**
- * Created by Thomas Win on 29/8/17.
+ * Created by Tun Lin on 8/29/17.
  */
-
-public class CartManager {
-
-    public void getProductInCart(LoadDataCallback<Product> callback) {
+public class ProductsPresenterTest {
+    @Test
+    public void loadProducts() throws Exception {
 
     }
 
