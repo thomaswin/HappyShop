@@ -19,8 +19,8 @@ package com.sephora.happyshop.ui.products;
 import android.support.annotation.NonNull;
 
 import com.sephora.happyshop.data.Product;
-import com.sephora.happyshop.service.ProductManager;
 import com.sephora.happyshop.data.source.LoadDataCallback;
+import com.sephora.happyshop.service.ProductManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,23 +61,8 @@ public class ProductsPresenter implements ProductsContract.Presenter {
 
     @Override
     public void loadProducts(String category, Integer page, boolean forceUpdate) {
-        loadProducts(category, page, forceUpdate || firstLoad, true);
-        firstLoad = false;
-    }
 
-
-    private void loadProducts(String category,
-                              Integer page,
-                              boolean forceUpdate,
-                              final boolean showLoadingUI) {
-
-        if (showLoadingUI) {
-            productsView.setLoadingIndicator(true);
-        }
-        if (forceUpdate) {
-            productManager.refreshProducts();
-        }
-
+        productsView.setLoadingIndicator(true);
 
         // EspressoIdlingResource.increment(); // App is busy until further notice
         productManager.getProductsByCategory(category, page, new LoadDataCallback<List<Product>>() {
@@ -94,9 +79,8 @@ public class ProductsPresenter implements ProductsContract.Presenter {
                     public Void call() throws Exception {
 
                         if (productsView.isActive()) {
-                            if (showLoadingUI) {
-                                productsView.setLoadingIndicator(false);
-                            }
+
+                            productsView.setLoadingIndicator(false);
 
                             if (productsToShow.isEmpty()) {
                                 productsView.showNoProducts();
@@ -118,6 +102,7 @@ public class ProductsPresenter implements ProductsContract.Presenter {
                     public Void call() throws Exception {
 
                         if (productsView.isActive()) {
+                            productsView.setLoadingIndicator(false);
                             productsView.showLoadingProductsError();
                         }
                         return null;
@@ -127,4 +112,5 @@ public class ProductsPresenter implements ProductsContract.Presenter {
             }
         });
     }
+
 }

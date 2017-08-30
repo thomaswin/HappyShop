@@ -16,26 +16,37 @@
 
 package com.sephora.happyshop.ui.products;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.sephora.happyshop.R;
+import com.sephora.happyshop.common.LogUtils;
 import com.sephora.happyshop.data.Product;
 import com.sephora.happyshop.ui.products.ProductsFragment.OnProductsFragmentListener;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.ViewHolder> {
 
     private static final String TAG = ProductViewAdapter.class.getSimpleName();
 
+    private Context context;
     private final List<Product> products;
     private final OnProductsFragmentListener listener;
 
-    public ProductViewAdapter(List<Product> items, ProductsFragment.OnProductsFragmentListener listener) {
+    public ProductViewAdapter(Context context, List<Product> items, ProductsFragment.OnProductsFragmentListener listener) {
+        this.context = context;
         products = items;
         this.listener = listener;
     }
@@ -50,9 +61,31 @@ public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
-        holder.item = products.get(position);
-        holder.productIDView.setText("Product ID : " + products.get(position).id);
-        holder.nameView.setText(products.get(position).name);
+        Product product = products.get(position);
+        holder.item = product;
+        holder.nameView.setText(product.name);
+
+        // Currency formatter
+        Locale locale = new Locale("en", "SG");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        String displayMoney = currencyFormatter.format(product.price);
+
+        LogUtils.LOGD(TAG, product.toString());
+
+        holder.priceView.setText(displayMoney);
+        holder.onSaleView.setText(product.underSale ? context.getString(R.string.product_on_sale) : "");
+
+        ImageLoader imageLoader = ImageLoader.getInstance();
+        imageLoader.loadImage(product.imgUrl, new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                if (loadedImage != null) {
+                    holder.productImageView.setImageBitmap(loadedImage);
+                } else {
+                    Toast.makeText(context, "Cannot loaded", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,16 +105,22 @@ public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public final View view;
-        public final TextView productIDView;
+
         public final TextView nameView;
+        public final ImageView productImageView;
+        public final TextView priceView;
+        public final TextView onSaleView;
+
         public Product item;
 
         public ViewHolder(View view) {
             super(view);
 
-            this.view = view;
-            productIDView   = view.findViewById(R.id.id);
-            nameView        = view.findViewById(R.id.content);
+            this.view           = view;
+            nameView            = view.findViewById(R.id.productName);
+            productImageView    = view.findViewById(R.id.productImageView);
+            priceView           = view.findViewById(R.id.priceTextView);
+            onSaleView          = view.findViewById(R.id.saleTextView);
         }
 
         @Override

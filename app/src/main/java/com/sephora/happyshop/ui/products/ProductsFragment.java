@@ -73,13 +73,13 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
         if (getArguments() != null) {
             category = getArguments().getString(ARG_CATEGORY_NAME);
         }
+        presenter.start();
+        presenter.loadProducts(category, 1, true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        presenter.start();
-        presenter.loadProducts(category, 1, true);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
         layoutManager = new GridLayoutManager(context, 2);
         recyclerView.setLayoutManager(layoutManager);
 
-        viewAdapter = new ProductViewAdapter(products, new OnProductsFragmentListener() {
+        viewAdapter = new ProductViewAdapter(getContext(), products, new OnProductsFragmentListener() {
             @Override
             public void onProductSelected(Product item) {
                 showProductDetailsUi(item.id);
@@ -124,7 +124,6 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
         return view;
     }
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Override
     public boolean isActive() {
         return isAdded();
@@ -157,31 +156,27 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
 
     @Override
     public void showLoadingProductsError() {
-        showMessage("Product loading error");
-
+        showMessage(getString(R.string.product_error_loading));
     }
 
     @Override
     public void showNoProducts() {
-        showMessage("No product");
+        showMessage(getString(R.string.product_not_found));
     }
 
     @Override
     public void showProducts(List<Product> data) {
         products.addAll(data);
         viewAdapter.notifyDataSetChanged();
-
         showMessage("Product updated.." + data.size() + "/" + products.size());
     }
 
     @Override
     public void showProductDetailsUi(int productId) {
-        Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, productId);
+        Intent intent = ProductDetailActivity.getIntent(getContext(), Integer.toString(productId));
         startActivity(intent);
     }
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     private void showMessage(String message) {
         Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
     }

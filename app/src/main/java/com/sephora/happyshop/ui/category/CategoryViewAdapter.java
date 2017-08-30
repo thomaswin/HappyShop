@@ -20,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sephora.happyshop.R;
@@ -30,11 +31,11 @@ import java.util.List;
 
 public class CategoryViewAdapter extends RecyclerView.Adapter<CategoryViewAdapter.ViewHolder> {
 
-    private final List<Category> values;
+    private final List<Category> categoryList;
     private final CategoryFragment.OnCategoryFragmentListener listener;
 
     public CategoryViewAdapter(List<Category> items, OnCategoryFragmentListener listener) {
-        values = items;
+        categoryList = items;
         this.listener = listener;
     }
 
@@ -47,17 +48,16 @@ public class CategoryViewAdapter extends RecyclerView.Adapter<CategoryViewAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = values.get(position);
-        holder.mIdView.setText(values.get(position).name);
-        holder.mContentView.setText(values.get(position).description);
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+        holder.category = categoryList.get(position);
+        holder.nameView.setText(categoryList.get(position).name);
+        holder.imageView.setImageResource(categoryList.get(position).resource);
+
+        holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != listener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    listener.onCategorySelected(holder.mItem);
+                    listener.onCategorySelected(holder.category);
                 }
             }
         });
@@ -65,25 +65,23 @@ public class CategoryViewAdapter extends RecyclerView.Adapter<CategoryViewAdapte
 
     @Override
     public int getItemCount() {
-        return values.size();
+        return categoryList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public Category mItem;
+
+        public final View view;
+        public final TextView nameView;
+        public final ImageView imageView;
+
+        public Category category;
 
         public ViewHolder(View view) {
             super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
-        }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            this.view = view;
+            nameView    = view.findViewById(R.id.categoryName);
+            imageView   = view.findViewById(R.id.categoryImageView);
         }
     }
 }

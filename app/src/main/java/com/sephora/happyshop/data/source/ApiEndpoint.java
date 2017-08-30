@@ -19,6 +19,7 @@ package com.sephora.happyshop.data.source;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.sephora.happyshop.R;
 import com.sephora.happyshop.common.LogUtils;
 import com.sephora.happyshop.data.Category;
 import com.sephora.happyshop.data.Product;
@@ -28,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,12 +66,13 @@ public class ApiEndpoint implements ProductsDataSource {
 
         // default categories
         List<Category> categories = new ArrayList<>();
-        categories.add(new Category("Makeup"));
-        categories.add(new Category("Tools"));
-        categories.add(new Category("Skincare"));
-        categories.add(new Category("Bath & Body"));
-        categories.add(new Category("Nails"));
-        categories.add(new Category("Men"));
+        categories.add(new Category("Makeup", null, R.drawable.makeup));
+        categories.add(new Category("Tools", null, R.drawable.tools));
+        categories.add(new Category("Skincare", null, R.drawable.skincare));
+        categories.add(new Category("Bath & Body", null, R.drawable.bath_body));
+        categories.add(new Category("Nails", null, R.drawable.nails));
+        categories.add(new Category("Men", null, R.drawable.men));
+
         callback.onDataLoaded(categories);
     }
 
@@ -81,15 +84,14 @@ public class ApiEndpoint implements ProductsDataSource {
         try {
             OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
                 .build();
 
-            String productUrl = "http://sephora-mobile-takehome-apple.herokuapp.com/api/v1/products.json?category=" + categoryName;
+            String productUrl = "http://sephora-mobile-takehome-apple.herokuapp.com/api/v1/products.json?category=" + URLEncoder.encode(categoryName, "UTF-8");
             if (page != null) {
                 productUrl += "&page=" + Integer.toString(page);
             }
-
 
             LogUtils.LOGD(TAG, "Product URL : " + productUrl);
 
@@ -104,23 +106,12 @@ public class ApiEndpoint implements ProductsDataSource {
             JSONArray jsonArray     = jsonObject.getJSONArray("products");
 
             List<Product> products = new ArrayList<>();
-
             for (int i = 0; i < jsonArray.length(); i++) {
                 
                 JSONObject json     = jsonArray.getJSONObject(i);
-                
-                int id              = json.getInt("id");
-                String name         = json.getString("name");
-                String category     = json.getString("category");
-                String imageUrl     = json.getString("img_url");
-                Boolean underSale   = json.getBoolean("under_sale");
-                double price        = json.getDouble("price");
-                String description  = json.optString("description");
-
-                Product product = new Product(id, name, category, price, imageUrl, description, underSale);
+                Product product = parseProductJson(json);
                 products.add(product);
             }
-
             callback.onDataLoaded(products);
             return;
 
@@ -134,6 +125,49 @@ public class ApiEndpoint implements ProductsDataSource {
 
     @Override
     public void getProduct(@NonNull String productId, @NonNull LoadDataCallback<Product> callback) {
+        try {
+            OkHttpClient client = new OkHttpClient()
+                .newBuilder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
 
+            String productUrl = "http://sephora-mobile-takehome-apple.herokuapp.com/api/v1/products/" + productId;
+            LogUtils.LOGD(TAG, "Product URL : " + productUrl);
+
+            Request request = new Request.Builder()
+                .url(productUrl)
+                .build();
+            Response response = client.newCall(request).execute();
+            String responseString = response.body().string();
+            LogUtils.LOGD(TAG, "Response : " + responseString);
+
+            JSONObject jsonObject = new JSONObject(responseString);
+            JSONObject productJson = jsonObject.getJSONObject("product");
+
+            Product product = parseProductJson(productJson);
+            callback.onDataLoaded(product);
+
+            return;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        callback.onDataNotAvailable();
+    }
+
+    @NonNull
+    private Product parseProductJson(JSONObject json) throws JSONException {
+        int id              = json.getInt("id");
+        String name         = json.getString("name");
+        String category     = json.getString("category");
+        String imageUrl     = json.getString("img_url");
+        Boolean underSale   = json.getBoolean("under_sale");
+        double price        = json.getDouble("price");
+        String description  = json.optString("description");
+
+        return new Product(id, name, category, price, imageUrl, description, underSale);
     }
 }

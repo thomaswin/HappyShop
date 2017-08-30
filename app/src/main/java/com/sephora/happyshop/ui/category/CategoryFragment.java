@@ -18,7 +18,6 @@ package com.sephora.happyshop.ui.category;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -83,7 +82,7 @@ public class CategoryFragment extends Fragment implements CategoryContract.View 
         viewAdapter = new CategoryViewAdapter(categories, new OnCategoryFragmentListener() {
             @Override
             public void onCategorySelected(Category item) {
-                showCategoryDetailUi(item.name);
+                listener.onCategorySelected(item);
             }
         });
         recyclerView.setAdapter(viewAdapter);
@@ -123,6 +122,7 @@ public class CategoryFragment extends Fragment implements CategoryContract.View 
 
     @Override
     public void showCategory(List<Category> data) {
+        categories.clear();
         categories.addAll(data);
         viewAdapter.notifyDataSetChanged();
 
@@ -137,11 +137,6 @@ public class CategoryFragment extends Fragment implements CategoryContract.View 
     @Override
     public void showLoadingCategoriesError() {
         showMessage(getString(R.string.category_error_retrieve));
-    }
-
-    @Override
-    public void showCategoryDetailUi(@NonNull String categoryName) {
-
     }
 
     private void showMessage(String message) {

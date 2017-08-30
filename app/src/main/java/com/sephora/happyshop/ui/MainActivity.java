@@ -20,17 +20,22 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sephora.happyshop.Injection;
 import com.sephora.happyshop.R;
+import com.sephora.happyshop.data.Category;
 import com.sephora.happyshop.ui.category.CategoryContract;
 import com.sephora.happyshop.ui.category.CategoryFragment;
 import com.sephora.happyshop.ui.category.CategoryPresenter;
+import com.sephora.happyshop.ui.checkout.CheckoutFragment;
+import com.sephora.happyshop.ui.products.ProductsFragment;
+import com.sephora.happyshop.ui.products.ProductsPresenter;
 import com.sephora.happyshop.util.ActivityUtils;
 
-public class MainActivity extends ActivityBase {
+public class MainActivity extends ActivityBase implements CategoryFragment.OnCategoryFragmentListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -40,32 +45,9 @@ public class MainActivity extends ActivityBase {
         setContentView(R.layout.activity_main);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
 
-        Fragment categoryFragment = getSupportFragmentManager().findFragmentById(R.id.content);
-        if (categoryFragment == null) {
-            categoryFragment = CategoryFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(
-                getSupportFragmentManager(), categoryFragment, R.id.content);
-        }
-
-        new CategoryPresenter(Injection.provideProductsRepository(getApplicationContext()),
-            (CategoryContract.View) categoryFragment);
-
-        /*
-        ProductsFragment productsFragment =
-            (ProductsFragment) getSupportFragmentManager().findFragmentById(R.id.content);
-
-        if (productsFragment == null) {
-            productsFragment = ProductsFragment.newInstance("Skincare");
-            ActivityUtils.addFragmentToActivity(
-                getSupportFragmentManager(), productsFragment, R.id.content);
-        }
-
-        ProductsPresenter productsPresenter = new ProductsPresenter(
-            Injection.provideProductsRepository(getApplicationContext()),
-            productsFragment);
-        */
+        changeToProductPage();
 
     }
 
@@ -79,28 +61,72 @@ public class MainActivity extends ActivityBase {
         return super.onOptionsItemSelected(item);
     }
 
-
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+    private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
         = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    changeToProductPage();
+                    return true;
                 case R.id.navigation_favourite:
-                    // textMessage.setText(R.string.title_favourite);
+                    changeToFavouritePage();
                     return true;
-                case R.id.navigation_categories:
-                    // textMessage.setText(R.string.title_categories);
-                    return true;
-                case R.id.navigation_whishlist:
-                    // textMessage.setText(R.string.title_wishlist);
+                case R.id.navigation_cart:
+                    changeToCheckOutPage();
                     return true;
             }
             return false;
         }
-
     };
 
+    private void changeToProductPage() {
 
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.productName);
+        if (fragment == null) {
+
+            fragment = CategoryFragment.newInstance();
+            ActivityUtils.addFragmentToActivity(
+                getSupportFragmentManager(), fragment, R.id.contentPanel);
+
+        } else if (!(fragment instanceof CategoryFragment)){
+
+            fragment = CategoryFragment.newInstance();
+            ActivityUtils.addFragmentToActivity(
+                getSupportFragmentManager(), fragment, R.id.contentPanel);
+
+        }
+        new CategoryPresenter(Injection.provideProductsRepository(getApplicationContext()),
+            (CategoryContract.View) fragment);
+    }
+
+    private void changeToFavouritePage() {
+
+    }
+
+    private void changeToCheckOutPage() {
+
+        CheckoutFragment fragment = CheckoutFragment.newInstance("", "");
+        ActivityUtils.replaceFragmentToActivity(
+            getSupportFragmentManager(),
+            fragment,
+            R.id.contentPanel);
+    }
+
+    @Override
+    public void onCategorySelected(Category item) {
+
+        ProductsFragment productsFragment = ProductsFragment.newInstance(item.name);
+        new ProductsPresenter(
+            Injection.provideProductsRepository(getApplicationContext()),
+            productsFragment);
+
+        getSupportFragmentManager()
+            .beginTransaction()
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            .add(R.id.contentPanel, productsFragment)
+            .addToBackStack("product")
+            .commit();
+    }
 }

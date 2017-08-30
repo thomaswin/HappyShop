@@ -20,9 +20,16 @@ public class Category {
 
     public String name;
     public String description;
+    public int resource;
 
     public Category(String name) {
         this.name = name;
+    }
+
+    public Category(String name, String description, int resource) {
+        this.name = name;
+        this.description = description;
+        this.resource = resource;
     }
 
     public Category(String name, String description) {

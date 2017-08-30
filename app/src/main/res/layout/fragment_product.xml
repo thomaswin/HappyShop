@@ -8,9 +8,11 @@
               android:padding="5dp">
 
     <ImageView
+        android:id="@+id/productImageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="#93c0d6"/>
+        android:background="#ffffff"
+        android:src="@drawable/place_holder"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,18 +21,33 @@
         android:padding="5dp">
 
         <TextView
-            android:id="@+id/id"
+            android:id="@+id/productName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Product ID"
-            />
+            android:text="Product Name"/>
 
-        <TextView
-            android:id="@+id/content"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Name"
-            />
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/priceTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S$10.00"/>
+
+            <TextView
+                android:id="@+id/saleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:text="On Sale"
+                android:textColor="#e15555"/>
+        </LinearLayout>
     </LinearLayout>
 
 

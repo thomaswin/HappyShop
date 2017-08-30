@@ -6,38 +6,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context="com.sephora.happyshop.ui.product.ProductDetailFragment"
-    tools:showIn="@layout/activity_product_detail">
-
+    tools:context="com.sephora.happyshop.ui.product.ProductDetailFragment">
 
     <ImageView
+        android:id="@+id/productImageView"
         android:layout_width="match_parent"
         android:layout_height="280dp"
-        android:background="#8fcccccc"/>
+        android:background="#8fffffff"
+        android:src="@drawable/place_holder"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="15dp">
+        android:orientation="vertical"
+        android:padding="8dp">
+
 
         <TextView
+            android:id="@+id/productName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Product Name"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/productPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$10.00"/>
+
+            <TextView
+                android:id="@+id/productSale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical|right"
+                android:text="On Sale"
+                android:textColor="#cc3d3d"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/addCardButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#719bd2"
+            android:text="Add to Cart"
+            android:textColor="#ffffff"/>
+
+        <TextView
+            android:id="@+id/productDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Description are here"/>
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/addCardButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#d28671"
-        android:text="Add to Cart"
-        android:textColor="#ffffff"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Description are here"/>
 </LinearLayout>

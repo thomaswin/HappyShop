@@ -19,6 +19,12 @@ package com.sephora.happyshop.ui.product;
 import android.support.annotation.NonNull;
 
 import com.sephora.happyshop.data.Product;
+import com.sephora.happyshop.data.source.LoadDataCallback;
+import com.sephora.happyshop.service.ProductManager;
+
+import java.util.concurrent.Callable;
+
+import bolts.Task;
 
 /**
  * Created by Thomas Win on 29/8/17.
@@ -26,6 +32,16 @@ import com.sephora.happyshop.data.Product;
 
 public class ProductDetailPresenter implements ProductDetailContract.Presenter {
 
+    private final ProductManager productManager;
+    private final ProductDetailContract.View productDetailView;
+
+    public ProductDetailPresenter(ProductManager productManager, ProductDetailContract.View productDetailView) {
+
+        this.productManager = productManager;
+        this.productDetailView = productDetailView;
+        this.productDetailView.setPresenter(this);
+
+    }
     @Override
     public void start() {
 
@@ -38,6 +54,47 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
 
     @Override
     public void getProduct(String productID) {
+
+        productDetailView.setLoadingIndicator(true);
+
+        productManager.getProduct(productID, new LoadDataCallback<Product>() {
+            @Override
+            public void onDataLoaded(final Product data) {
+
+                Task.call(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+
+                        if (productDetailView.isActive()) {
+
+                            productDetailView.setLoadingIndicator(false);
+
+                            if (data == null) {
+                                productDetailView.showNoProduct();
+                            } else {
+                                productDetailView.showProduct(data);
+                            }
+                        }
+                        return null;
+                    }
+                }, Task.UI_THREAD_EXECUTOR);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                Task.call(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+
+                        if (productDetailView.isActive()) {
+                            productDetailView.setLoadingIndicator(false);
+                            productDetailView.showLoadingProductError();
+                        }
+                        return null;
+                    }
+                }, Task.UI_THREAD_EXECUTOR);
+            }
+        });
 
     }
 
