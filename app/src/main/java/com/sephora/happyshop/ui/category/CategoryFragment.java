@@ -125,8 +125,6 @@ public class CategoryFragment extends Fragment implements CategoryContract.View 
         categories.clear();
         categories.addAll(data);
         viewAdapter.notifyDataSetChanged();
-
-        showMessage("Category updated.." + data.size() + "/" + categories.size());
     }
 
     @Override
@@ -140,7 +138,7 @@ public class CategoryFragment extends Fragment implements CategoryContract.View 
     }
 
     private void showMessage(String message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     public interface OnCategoryFragmentListener {

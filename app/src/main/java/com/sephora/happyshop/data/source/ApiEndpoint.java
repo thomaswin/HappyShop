@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 
 import com.sephora.happyshop.R;
 import com.sephora.happyshop.common.LogUtils;
+import com.sephora.happyshop.common.logger.Log;
 import com.sephora.happyshop.data.Category;
 import com.sephora.happyshop.data.Product;
 
@@ -62,7 +63,8 @@ public class ApiEndpoint implements ProductsDataSource {
     @Override
     public void getProductCategories(@NonNull LoadDataCallback<List<Category>> callback) {
         // TODO check networking
-        LogUtils.LOGD(TAG, "getProductCategories");
+        Log.d(TAG, "getProductCategories");
+
 
         // default categories
         List<Category> categories = new ArrayList<>();
@@ -93,14 +95,14 @@ public class ApiEndpoint implements ProductsDataSource {
                 productUrl += "&page=" + Integer.toString(page);
             }
 
-            LogUtils.LOGD(TAG, "Product URL : " + productUrl);
+            Log.d(TAG, "Product URL : " + productUrl);
 
             Request request = new Request.Builder()
                 .url(productUrl)
                 .build();
             Response response = client.newCall(request).execute();
             String responseString = response.body().string();
-
+            Log.i(TAG, "Response : " + responseString);
 
             JSONObject jsonObject   = new JSONObject(responseString);
             JSONArray jsonArray     = jsonObject.getJSONArray("products");
@@ -117,7 +119,9 @@ public class ApiEndpoint implements ProductsDataSource {
 
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e(TAG, "Product Category Fetch Error : " + e.getMessage());
         } catch (JSONException e) {
+            Log.e(TAG, "Product Category JSON Error : " + e.getMessage());
             e.printStackTrace();
         }
         callback.onDataNotAvailable();
@@ -133,14 +137,14 @@ public class ApiEndpoint implements ProductsDataSource {
                 .build();
 
             String productUrl = "http://sephora-mobile-takehome-apple.herokuapp.com/api/v1/products/" + productId;
-            LogUtils.LOGD(TAG, "Product URL : " + productUrl);
+            Log.d(TAG, "Product URL : " + productUrl);
 
             Request request = new Request.Builder()
                 .url(productUrl)
                 .build();
             Response response = client.newCall(request).execute();
             String responseString = response.body().string();
-            LogUtils.LOGD(TAG, "Response : " + responseString);
+            Log.d(TAG, "Response : " + responseString);
 
             JSONObject jsonObject = new JSONObject(responseString);
             JSONObject productJson = jsonObject.getJSONObject("product");

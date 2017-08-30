@@ -43,7 +43,6 @@ public class ProductManager implements ProductsDataSource {
 
     private final ProductsDataSource productsDataSource;
 
-
     public static ProductManager getInstance(ProductsDataSource productsRmoteDataSource) {
 
         if (INSTANCE == null) {

@@ -21,6 +21,9 @@ import android.app.Application;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 /**
  * Created by Tun Lin on 8/29/17.
  */
@@ -31,9 +34,16 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+        Realm.init(this);
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
+                .name("sephora.happy")
+                .build();
+
+        Realm.setDefaultConfiguration(realmConfiguration);
+
+        ImageLoaderConfiguration imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(this)
 			.build();
-        ImageLoader.getInstance().init(config);
+        ImageLoader.getInstance().init(imageLoaderConfiguration);
 
     }
 

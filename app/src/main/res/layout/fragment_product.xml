@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_margin="5dp"
-              android:background="#ffffff"
-              android:orientation="vertical"
-              android:padding="5dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/productImageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="#ffffff"
-        android:src="@drawable/place_holder"/>
+        android:background="#ffffff" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +23,7 @@
             android:id="@+id/productName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Product Name"/>
+            android:text="Product Name" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,7 +35,7 @@
                 android:id="@+id/priceTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="S$10.00"/>
+                android:text="S$10.00" />
 
             <TextView
                 android:id="@+id/saleTextView"
@@ -46,7 +45,7 @@
                 android:layout_weight="1"
                 android:gravity="right"
                 android:text="On Sale"
-                android:textColor="#e15555"/>
+                android:textColor="#e15555" />
         </LinearLayout>
     </LinearLayout>
 

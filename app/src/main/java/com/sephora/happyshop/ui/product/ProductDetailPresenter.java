@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 
 import com.sephora.happyshop.data.Product;
 import com.sephora.happyshop.data.source.LoadDataCallback;
+import com.sephora.happyshop.service.CartManager;
 import com.sephora.happyshop.service.ProductManager;
 
 import java.util.concurrent.Callable;
@@ -33,11 +34,15 @@ import bolts.Task;
 public class ProductDetailPresenter implements ProductDetailContract.Presenter {
 
     private final ProductManager productManager;
+    private final CartManager cardManager;
     private final ProductDetailContract.View productDetailView;
 
-    public ProductDetailPresenter(ProductManager productManager, ProductDetailContract.View productDetailView) {
+    public ProductDetailPresenter(ProductManager productManager,
+                                  CartManager cardManager,
+                                  ProductDetailContract.View productDetailView) {
 
         this.productManager = productManager;
+        this.cardManager = cardManager;
         this.productDetailView = productDetailView;
         this.productDetailView.setPresenter(this);
 
@@ -100,6 +105,6 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
 
     @Override
     public void addToCart(@NonNull Product requestedProduct) {
-
+        cardManager.addProductToCard(requestedProduct);
     }
 }

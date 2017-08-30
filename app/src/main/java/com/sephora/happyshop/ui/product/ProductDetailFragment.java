@@ -17,6 +17,7 @@
 package com.sephora.happyshop.ui.product;
 
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -28,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.sephora.happyshop.R;
 import com.sephora.happyshop.common.LogUtils;
 import com.sephora.happyshop.data.Product;
@@ -64,6 +67,7 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     private ProgressDialog dialog;
     private ProductDetailContract.Presenter presenter;
     private Unbinder unbinder;
+    private Product currentProduct;
 
     public ProductDetailFragment() {
     }
@@ -140,7 +144,7 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
 
     @Override
     public void showProduct(Product product) {
-
+        this.currentProduct = product;
         productName.setText(product.name);
         productDescription.setText(product.description);
 
@@ -155,7 +159,7 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
             getActivity().getString(R.string.product_on_sale) : "");
 
 
-        /*
+
         ImageLoader imageLoader = ImageLoader.getInstance();
         imageLoader.loadImage(product.imgUrl, new SimpleImageLoadingListener() {
             @Override
@@ -166,11 +170,7 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
                     Toast.makeText(getActivity(), "Cannot loaded", Toast.LENGTH_SHORT).show();
                 }
             }
-        }); */
-
-
-
-
+        });
     }
 
     @Override
@@ -186,10 +186,11 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     @OnClick(R.id.addCardButton)
     public void onAddCartClicked(View view) {
         Toast.makeText(getContext(), "Added", Toast.LENGTH_SHORT).show();
+        presenter.addToCart(currentProduct);
     }
 
     private void showMessage(String message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
 }

@@ -26,11 +26,16 @@ import android.view.MenuItem;
 
 import com.sephora.happyshop.Injection;
 import com.sephora.happyshop.R;
+import com.sephora.happyshop.common.logger.Log;
+import com.sephora.happyshop.common.logger.LogWrapper;
+import com.sephora.happyshop.common.logger.MessageOnlyLogFilter;
 import com.sephora.happyshop.data.Category;
 import com.sephora.happyshop.ui.category.CategoryContract;
 import com.sephora.happyshop.ui.category.CategoryFragment;
 import com.sephora.happyshop.ui.category.CategoryPresenter;
+import com.sephora.happyshop.ui.checkout.CheckoutContract;
 import com.sephora.happyshop.ui.checkout.CheckoutFragment;
+import com.sephora.happyshop.ui.checkout.CheckoutPresenter;
 import com.sephora.happyshop.ui.products.ProductsFragment;
 import com.sephora.happyshop.ui.products.ProductsPresenter;
 import com.sephora.happyshop.util.ActivityUtils;
@@ -87,13 +92,13 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
         if (fragment == null) {
 
             fragment = CategoryFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(
+            ActivityUtils.replaceFragmentToActivity(
                 getSupportFragmentManager(), fragment, R.id.contentPanel);
 
         } else if (!(fragment instanceof CategoryFragment)){
 
             fragment = CategoryFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(
+            ActivityUtils.replaceFragmentToActivity(
                 getSupportFragmentManager(), fragment, R.id.contentPanel);
 
         }
@@ -107,11 +112,14 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
 
     private void changeToCheckOutPage() {
 
-        CheckoutFragment fragment = CheckoutFragment.newInstance("", "");
+        CheckoutFragment fragment = CheckoutFragment.newInstance();
         ActivityUtils.replaceFragmentToActivity(
             getSupportFragmentManager(),
             fragment,
             R.id.contentPanel);
+
+        new CheckoutPresenter(Injection.provideCardManager(getApplicationContext()),
+                (CheckoutContract.View) fragment);
     }
 
     @Override
@@ -128,5 +136,25 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
             .add(R.id.contentPanel, productsFragment)
             .addToBackStack("product")
             .commit();
+    }
+
+    @Override
+    public void initializeLogging() {
+        // Wraps Android's native log framework.
+        LogWrapper logWrapper = new LogWrapper();
+        // Using Log, front-end to the logging chain, emulates android.util.log method signatures.
+        Log.setLogNode(logWrapper);
+
+        // Filter strips out everything except the message text.
+        MessageOnlyLogFilter msgFilter = new MessageOnlyLogFilter();
+        logWrapper.setNext(msgFilter);
+
+        // On screen logging via a fragment with a TextView.
+        /*
+        LogFragment logFragment = (LogFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.log_fragment);
+        msgFilter.setNext(logFragment.getLogView());
+        */
+        Log.i(TAG, "Ready");
     }
 }

@@ -73,13 +73,16 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
         if (getArguments() != null) {
             category = getArguments().getString(ARG_CATEGORY_NAME);
         }
-        presenter.start();
-        presenter.loadProducts(category, 1, true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        if (products.isEmpty()) {
+            presenter.start();
+            presenter.loadProducts(category, 1, true);
+        }
     }
 
     @Override
@@ -91,6 +94,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
 
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         RecyclerView recyclerView = view.findViewById(R.id.product_list);
+        swipeRefreshLayout.setEnabled(false);
 
         layoutManager = new GridLayoutManager(context, 2);
         recyclerView.setLayoutManager(layoutManager);
@@ -117,7 +121,12 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
                 int pastVisibleItems    = layoutManager.findFirstVisibleItemPosition();
                 if (pastVisibleItems + visibleItemCount >= totalItemCount) {
                     int page = products.size() / 10;
-                    presenter.loadProducts(category, page, false);
+                    if (page == 0) {
+                        presenter.loadProducts(category, 1, false);
+                    } else {
+                        presenter.loadProducts(category, page, false);
+                    }
+
                 }
             }
         });
@@ -166,8 +175,9 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
 
     @Override
     public void showProducts(List<Product> data) {
+        int position = products.size();
         products.addAll(data);
-        viewAdapter.notifyDataSetChanged();
+        viewAdapter.notifyItemChanged(position);
         showMessage("Product updated.." + data.size() + "/" + products.size());
     }
 
@@ -178,7 +188,7 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
     }
 
     private void showMessage(String message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     public interface OnProductsFragmentListener {

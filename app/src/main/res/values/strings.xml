@@ -16,5 +16,6 @@
     <string name="product_error_loading">Product loading error</string>
     <string name="check_out">Check Out Page</string>
     <string name="product_on_sale">On Sale</string>
+    <string name="action_clear">Clear Cart</string>
 
 </resources>

@@ -16,7 +16,9 @@
 
 package com.sephora.happyshop.data;
 
-public class Product {
+import io.realm.RealmObject;
+
+public class Product extends RealmObject {
 
     public int id;
     public String name;
@@ -25,6 +27,9 @@ public class Product {
     public String imgUrl;
     public String description;
     public boolean underSale;
+
+    public Product() {
+    }
 
     public Product(int id, String name, String category, double price, String imgUrl, String description, boolean underSale) {
         this.id             = id;
