@@ -1,3 +1,19 @@
+/*
+ *  Copyright 2017, Tun Lin
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package com.sephora.happyshop.ui.products;
 
 import android.content.Context;
@@ -62,8 +78,11 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
     @Override
     public void onResume() {
         super.onResume();
-        presenter.start();
-        presenter.loadProducts(category, 1, true);
+
+        if (products.isEmpty()) {
+            presenter.start();
+            presenter.loadProducts(category, 1, true);
+        }
     }
 
     @Override
@@ -75,11 +94,12 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
 
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         RecyclerView recyclerView = view.findViewById(R.id.product_list);
+        swipeRefreshLayout.setEnabled(false);
 
         layoutManager = new GridLayoutManager(context, 2);
         recyclerView.setLayoutManager(layoutManager);
 
-        viewAdapter = new ProductViewAdapter(products, new OnProductsFragmentListener() {
+        viewAdapter = new ProductViewAdapter(getContext(), products, new OnProductsFragmentListener() {
             @Override
             public void onProductSelected(Product item) {
                 showProductDetailsUi(item.id);
@@ -101,14 +121,18 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
                 int pastVisibleItems    = layoutManager.findFirstVisibleItemPosition();
                 if (pastVisibleItems + visibleItemCount >= totalItemCount) {
                     int page = products.size() / 10;
-                    presenter.loadProducts(category, page, false);
+                    if (page == 0) {
+                        presenter.loadProducts(category, 1, false);
+                    } else {
+                        presenter.loadProducts(category, page, false);
+                    }
+
                 }
             }
         });
         return view;
     }
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @Override
     public boolean isActive() {
         return isAdded();
@@ -141,33 +165,44 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
 
     @Override
     public void showLoadingProductsError() {
-        showMessage("Product loading error");
-
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showMessage(getString(R.string.product_error_loading));
+            }
+        });
     }
 
     @Override
     public void showNoProducts() {
-        showMessage("No product");
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showMessage(getString(R.string.product_not_found));
+            }
+        });
     }
 
     @Override
-    public void showProducts(List<Product> data) {
-        products.addAll(data);
-        viewAdapter.notifyDataSetChanged();
-
-        showMessage("Product updated.." + data.size() + "/" + products.size());
+    public void showProducts(final List data) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int position = products.size();
+                products.addAll(data);
+                viewAdapter.notifyItemChanged(position);
+            }
+        });
     }
 
     @Override
     public void showProductDetailsUi(int productId) {
-        Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, productId);
+        Intent intent = ProductDetailActivity.getIntent(getContext(), Integer.toString(productId));
         startActivity(intent);
     }
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     private void showMessage(String message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     public interface OnProductsFragmentListener {

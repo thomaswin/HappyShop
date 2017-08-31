@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- TODO change graphic -->
     <item
-        android:id="@+id/navigation_favourite"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_favourite"/>
-
-    <item
-        android:id="@+id/navigation_categories"
+        android:id="@+id/navigation_home"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_categories"/>
 
     <item
-        android:id="@+id/navigation_whishlist"
+        android:id="@+id/navigation_cart"
         android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/title_wishlist"/>
+        android:title="@string/title_cart"/>
 
 </menu>

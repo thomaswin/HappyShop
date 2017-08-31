@@ -1,3 +1,19 @@
+/*
+ *  Copyright 2017, Tun Lin
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package com.sephora.happyshop.service;
 
 import android.support.annotation.NonNull;
@@ -9,9 +25,7 @@ import com.sephora.happyshop.data.source.LoadDataCallback;
 import com.sephora.happyshop.data.source.ProductsDataSource;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import bolts.Task;
@@ -28,10 +42,6 @@ public class ProductManager implements ProductsDataSource {
     private static ProductManager INSTANCE = null;
 
     private final ProductsDataSource productsDataSource;
-
-    Map<String, Product> cachedProducts;
-
-    boolean cacheIsDirty = false;
 
     public static ProductManager getInstance(ProductsDataSource productsRmoteDataSource) {
 
@@ -67,12 +77,6 @@ public class ProductManager implements ProductsDataSource {
                                       @NonNull final LoadDataCallback<List<Product>> callback) {
         checkNotNull(callback);
 
-        if (cachedProducts != null && !cacheIsDirty) {
-            callback.onDataLoaded(new ArrayList<>(cachedProducts.values()));
-            return;
-        }
-
-
         Task.callInBackground(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -80,8 +84,7 @@ public class ProductManager implements ProductsDataSource {
                 productsDataSource.getProductsByCategory(name, page, new LoadDataCallback<List<Product>>() {
                     @Override
                     public void onDataLoaded(List<Product> data) {
-                        refereshCache(data);
-                        callback.onDataLoaded(new ArrayList<>(cachedProducts.values()));
+                        callback.onDataLoaded(data);
                     }
 
                     @Override
@@ -96,51 +99,32 @@ public class ProductManager implements ProductsDataSource {
     }
 
     @Override
-    public void getProduct(@NonNull String productId, @NonNull final LoadDataCallback<Product> callback) {
+    public void getProduct(@NonNull final String productId, @NonNull final LoadDataCallback<Product> callback) {
         checkNotNull(callback);
 
-
-        if (cachedProducts != null && !cachedProducts.isEmpty()) {
-            Product cachedProduct = cachedProducts.get(productId);
-            if (cachedProduct != null) {
-                callback.onDataLoaded(cachedProduct);
-                return;
-            }
-        }
-        productsDataSource.getProduct(productId, new LoadDataCallback<Product>() {
+        Task.callInBackground(new Callable<Void>() {
             @Override
-            public void onDataLoaded(Product product) {
-                if (cachedProducts == null) {
-                    cachedProducts = new LinkedHashMap<>();
-                }
-                cachedProducts.put(Integer.toString(product.id), product);
-                callback.onDataLoaded(product);
-            }
+            public Void call() throws Exception {
 
-            @Override
-            public void onDataNotAvailable() {
-                callback.onDataNotAvailable();
+                productsDataSource.getProduct(productId, new LoadDataCallback<Product>() {
+                    @Override
+                    public void onDataLoaded(Product product) {
+                        callback.onDataLoaded(product);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        callback.onDataNotAvailable();
+                    }
+                });
+                return null;
             }
         });
+
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     public void getClearAllProducts() {
 
-    }
-
-    public void refreshProducts() {
-        cacheIsDirty = true;
-    }
-
-    private void refereshCache(List<Product> products) {
-        if (cachedProducts == null) {
-            cachedProducts = new LinkedHashMap<>();
-        }
-        cachedProducts.clear();
-        for (Product product : products) {
-            cachedProducts.put(Integer.toString(product.id), product);
-        }
-        cacheIsDirty = false;
     }
 }
