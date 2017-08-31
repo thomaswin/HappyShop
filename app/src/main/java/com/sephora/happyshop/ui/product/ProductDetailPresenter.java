@@ -23,10 +23,6 @@ import com.sephora.happyshop.data.source.LoadDataCallback;
 import com.sephora.happyshop.service.CartManager;
 import com.sephora.happyshop.service.ProductManager;
 
-import java.util.concurrent.Callable;
-
-import bolts.Task;
-
 /**
  * Created by Thomas Win on 29/8/17.
  */
@@ -66,38 +62,24 @@ public class ProductDetailPresenter implements ProductDetailContract.Presenter {
             @Override
             public void onDataLoaded(final Product data) {
 
-                Task.call(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
+                if (productDetailView.isActive()) {
 
-                        if (productDetailView.isActive()) {
+                    productDetailView.setLoadingIndicator(false);
 
-                            productDetailView.setLoadingIndicator(false);
-
-                            if (data == null) {
-                                productDetailView.showNoProduct();
-                            } else {
-                                productDetailView.showProduct(data);
-                            }
-                        }
-                        return null;
+                    if (data == null) {
+                        productDetailView.showNoProduct();
+                    } else {
+                        productDetailView.showProduct(data);
                     }
-                }, Task.UI_THREAD_EXECUTOR);
+                }
             }
 
             @Override
             public void onDataNotAvailable() {
-                Task.call(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-
-                        if (productDetailView.isActive()) {
-                            productDetailView.setLoadingIndicator(false);
-                            productDetailView.showLoadingProductError();
-                        }
-                        return null;
-                    }
-                }, Task.UI_THREAD_EXECUTOR);
+                if (productDetailView.isActive()) {
+                    productDetailView.setLoadingIndicator(false);
+                    productDetailView.showLoadingProductError();
+                }
             }
         });
 

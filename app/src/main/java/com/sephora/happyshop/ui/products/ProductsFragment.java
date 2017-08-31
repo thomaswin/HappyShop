@@ -165,20 +165,34 @@ public class ProductsFragment extends Fragment implements ProductsContract.View 
 
     @Override
     public void showLoadingProductsError() {
-        showMessage(getString(R.string.product_error_loading));
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showMessage(getString(R.string.product_error_loading));
+            }
+        });
     }
 
     @Override
     public void showNoProducts() {
-        showMessage(getString(R.string.product_not_found));
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showMessage(getString(R.string.product_not_found));
+            }
+        });
     }
 
     @Override
-    public void showProducts(List<Product> data) {
-        int position = products.size();
-        products.addAll(data);
-        viewAdapter.notifyItemChanged(position);
-        showMessage("Product updated.." + data.size() + "/" + products.size());
+    public void showProducts(final List data) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int position = products.size();
+                products.addAll(data);
+                viewAdapter.notifyItemChanged(position);
+            }
+        });
     }
 
     @Override

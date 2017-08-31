@@ -2,9 +2,8 @@
 
     <string name="app_name">Happy Shop</string>
 
-    <string name="title_favourite">Favourite</string>
-    <string name="title_categories">Categories</string>
-    <string name="title_cart">WishList</string>
+    <string name="title_categories">Home</string>
+    <string name="title_cart">Cart</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_product_detail">Product Detail</string>
@@ -12,10 +11,14 @@
 
     <string name="category_error_retrieve">Category retrieve error!!!</string>
     <string name="category_error_not_found">No category found !!!</string>
-    <string name="product_not_found">No product</string>
+    <string name="product_not_found">No More Product</string>
     <string name="product_error_loading">Product loading error</string>
     <string name="check_out">Check Out Page</string>
     <string name="product_on_sale">On Sale</string>
     <string name="action_clear">Clear Cart</string>
+
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

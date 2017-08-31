@@ -88,6 +88,7 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
         if (getArguments() != null) {
             productId = getArguments().getString(ARG_PRODUCT_ID);
         }
+        getActivity().setTitle(R.string.app_name);
 
         presenter.start();
         presenter.getProduct(productId);
@@ -126,61 +127,82 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     }
 
     @Override
-    public void setLoadingIndicator(boolean active) {
+    public void setLoadingIndicator(final boolean active) {
 
-        if (active) {
-            dialog = new ProgressDialog(getActivity());
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.setIndeterminate(true);
-            dialog.setMessage("Please wait...");
-            dialog.setCancelable(false);
-            dialog.show();
-        } else {
-            if (dialog != null) {
-                dialog.dismiss();
-            }
-        }
-    }
-
-    @Override
-    public void showProduct(Product product) {
-        this.currentProduct = product;
-        productName.setText(product.name);
-        productDescription.setText(product.description);
-
-        // Currency formatter
-        Locale locale = new Locale("en", "SG");
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
-        String displayMoney = currencyFormatter.format(product.price);
-
-
-        productPrice.setText(displayMoney);
-        productSale.setText(product.underSale ?
-            getActivity().getString(R.string.product_on_sale) : "");
-
-
-
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.loadImage(product.imgUrl, new SimpleImageLoadingListener() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                if (loadedImage != null) {
-                    productImageView.setImageBitmap(loadedImage);
+            public void run() {
+
+                if (active) {
+                    dialog = new ProgressDialog(getActivity());
+                    dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    dialog.setIndeterminate(true);
+                    dialog.setMessage("Please wait...");
+                    dialog.setCancelable(false);
+                    dialog.show();
                 } else {
-                    Toast.makeText(getActivity(), "Cannot loaded", Toast.LENGTH_SHORT).show();
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
                 }
             }
         });
     }
 
     @Override
+    public void showProduct(final Product product) {
+        currentProduct = product;
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                productName.setText(product.name);
+                productDescription.setText(product.description);
+
+                // Currency formatter
+                Locale locale = new Locale("en", "SG");
+                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+                String displayMoney = currencyFormatter.format(product.price);
+
+                productPrice.setText(displayMoney);
+                productSale.setText(product.underSale ?
+                    getActivity().getString(R.string.product_on_sale) : "");
+
+                ImageLoader imageLoader = ImageLoader.getInstance();
+                imageLoader.loadImage(product.imgUrl, new SimpleImageLoadingListener() {
+                    @Override
+                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                        if (loadedImage != null) {
+                            productImageView.setImageBitmap(loadedImage);
+                        } else {
+                            Toast.makeText(getActivity(), "Cannot loaded", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
     public void showLoadingProductError() {
-        showMessage(getString(R.string.product_error_loading));
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showMessage(getString(R.string.product_error_loading));
+            }
+        });
     }
 
     @Override
     public void showNoProduct() {
-        showMessage(getString(R.string.product_not_found));
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showMessage(getString(R.string.product_not_found));
+            }
+        });
     }
 
     @OnClick(R.id.addCardButton)

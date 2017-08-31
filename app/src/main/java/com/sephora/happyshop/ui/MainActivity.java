@@ -23,6 +23,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.sephora.happyshop.Injection;
 import com.sephora.happyshop.R;
@@ -51,9 +52,7 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
-
         changeToProductPage();
-
     }
 
     @Override
@@ -75,9 +74,7 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
                 case R.id.navigation_home:
                     changeToProductPage();
                     return true;
-                case R.id.navigation_favourite:
-                    changeToFavouritePage();
-                    return true;
+
                 case R.id.navigation_cart:
                     changeToCheckOutPage();
                     return true;
@@ -93,21 +90,17 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
 
             fragment = CategoryFragment.newInstance();
             ActivityUtils.replaceFragmentToActivity(
-                getSupportFragmentManager(), fragment, R.id.contentPanel);
+                getSupportFragmentManager(), fragment, R.id.contentPanel, "Home");
 
         } else if (!(fragment instanceof CategoryFragment)){
 
             fragment = CategoryFragment.newInstance();
             ActivityUtils.replaceFragmentToActivity(
-                getSupportFragmentManager(), fragment, R.id.contentPanel);
+                getSupportFragmentManager(), fragment, R.id.contentPanel, "Home");
 
         }
         new CategoryPresenter(Injection.provideProductsRepository(getApplicationContext()),
             (CategoryContract.View) fragment);
-    }
-
-    private void changeToFavouritePage() {
-
     }
 
     private void changeToCheckOutPage() {
@@ -116,7 +109,8 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
         ActivityUtils.replaceFragmentToActivity(
             getSupportFragmentManager(),
             fragment,
-            R.id.contentPanel);
+            R.id.contentPanel,
+            "Cart");
 
         new CheckoutPresenter(Injection.provideCardManager(getApplicationContext()),
                 (CheckoutContract.View) fragment);
@@ -124,6 +118,11 @@ public class MainActivity extends ActivityBase implements CategoryFragment.OnCat
 
     @Override
     public void onCategorySelected(Category item) {
+
+        if (!isConnected) {
+            Toast.makeText(getApplicationContext(), "No connectivity !!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         ProductsFragment productsFragment = ProductsFragment.newInstance(item.name);
         new ProductsPresenter(

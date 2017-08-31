@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.sephora.happyshop.ui.checkout.CheckoutFragment">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.sephora.happyshop.ui.checkout.CheckoutFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -21,7 +21,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal|center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/empty_cart"
+                />
 
             <TextView
                 style="@style/TextAppearance.AppCompat.Medium"
@@ -31,7 +38,7 @@
                 android:gravity="center"
                 android:maxLines="2"
                 android:padding="16dp"
-                android:text="Please Add Product to Cart" />
+                android:text="Please Add Product to Cart"/>
         </LinearLayout>
 
     </FrameLayout>
@@ -39,10 +46,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginBottom="20dp"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="horizontal"
-        android:showDividers="middle"
-        android:layout_marginBottom="20dp">
+        android:showDividers="middle">
 
         <TextView
             android:id="@+id/totalTextView"
@@ -52,16 +59,16 @@
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="S$0.00"
-            android:textColor="#2d2d2d" />
+            android:textColor="#2d2d2d"/>
 
         <Button
-            android:id="@+id/amount"
-            style="@style/TextAppearance.AppCompat.Large"
+            android:id="@+id/checkOutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="PAY" />
+            android:text="PAY"
+
+            />
 
     </LinearLayout>
 </LinearLayout>

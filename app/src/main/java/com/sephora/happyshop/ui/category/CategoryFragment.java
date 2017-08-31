@@ -62,6 +62,12 @@ public class CategoryFragment extends Fragment implements CategoryContract.View 
         if (getArguments() != null) {
             // TODO get data from arguments
         }
+        getActivity().setTitle(R.string.title_categories);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override

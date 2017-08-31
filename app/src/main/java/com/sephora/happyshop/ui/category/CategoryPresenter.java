@@ -39,8 +39,6 @@ public class CategoryPresenter implements CategoryContract.Presenter {
     private final ProductManager productManager;
     private final CategoryContract.View categoryView;
 
-    private List<Category> productCategories = new ArrayList<>();
-
     public CategoryPresenter(@NonNull ProductManager productManager, @NonNull CategoryContract.View categoryView) {
         this.productManager    = checkNotNull(productManager);
         this.categoryView      = checkNotNull(categoryView);

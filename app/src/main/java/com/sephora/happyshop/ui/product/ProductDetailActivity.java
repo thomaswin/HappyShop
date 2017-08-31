@@ -53,12 +53,13 @@ public class ProductDetailActivity extends ActivityBase {
 
         ProductDetailFragment fragment = ProductDetailFragment.newInstance(productId);
         ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
-                fragment, R.id.contentPanel);
+            fragment, R.id.contentPanel,
+            "ProductDetail");
 
         new ProductDetailPresenter(
-                Injection.provideProductsRepository(getApplicationContext()),
-                Injection.provideCardManager(getApplicationContext()),
-                fragment);
+            Injection.provideProductsRepository(getApplicationContext()),
+            Injection.provideCardManager(getApplicationContext()),
+            fragment);
 
     }
 

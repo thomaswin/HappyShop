@@ -2,12 +2,14 @@ package com.sephora.happyshop.ui.checkout;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -35,9 +37,10 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class CheckoutFragment extends Fragment implements
-        CheckoutContract.View {
+    CheckoutContract.View {
 
     private static final String TAG = LogUtils.makeLogTag(CheckoutFragment.class);
 
@@ -71,6 +74,8 @@ public class CheckoutFragment extends Fragment implements
         if (getArguments() != null) {
 
         }
+        getActivity().setTitle(R.string.title_cart);
+
         setHasOptionsMenu(true);
     }
 
@@ -142,17 +147,42 @@ public class CheckoutFragment extends Fragment implements
 
         products.clear();
         products.addAll(data);
-        productAdapter.notifyDataSetChanged();
 
-        double total = 0;
-        for (Product product : products) {
-            total += product.price;
-        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                productAdapter.notifyDataSetChanged();
 
-        Locale locale = new Locale("en", "SG");
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
-        String displayMoney = currencyFormatter.format(total);
-        totalTextView.setText(displayMoney);
+                double total = 0;
+                for (Product product : products) {
+                    total += product.price;
+                }
+
+                Locale locale = new Locale("en", "SG");
+                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+                String displayMoney = currencyFormatter.format(total);
+                totalTextView.setText(displayMoney);
+            }
+        });
+    }
+
+    @OnClick(R.id.checkOutButton)
+    public void checkOutClicked(View view) {
+
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Thanks you for supporting us.")
+                    .setTitle("Payment Completed !!")
+                    .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            presenter.clearCart();
+                        }
+                    });
+                builder.create().show();
+            }
+        });
     }
 
     public class ProductPaymentAdaper extends RecyclerView.Adapter<ProductPaymentAdaper.ViewHolder> {
