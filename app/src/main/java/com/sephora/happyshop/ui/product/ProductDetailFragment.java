@@ -1,23 +1,24 @@
 /*
- *  Copyright 2017, Tun Lin
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ *  *  Copyright 2017, Tun Lin
+ *  *
+ *  *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  you may not use this file except in compliance with the License.
+ *  *  You may obtain a copy of the License at
+ *  *
+ *  *  http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  *  Unless required by applicable law or agreed to in writing, software
+ *  *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  See the License for the specific language governing permissions and
+ *  *  limitations under the License.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
  */
 
 package com.sephora.happyshop.ui.product;
 
 import android.app.ProgressDialog;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -27,13 +28,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.sephora.happyshop.R;
 import com.sephora.happyshop.common.LogUtils;
 import com.sephora.happyshop.data.Product;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -44,6 +43,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class ProductDetailFragment extends Fragment implements ProductDetailContract.View {
+
     private static final String TAG = LogUtils.makeLogTag(ProductDetailFragment.class);
 
     private static final String ARG_PRODUCT_ID = "category_name";
@@ -63,7 +63,7 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     @BindView(R.id.productDescription)
     TextView productDescription;
 
-    private String productId;
+    private int productId;
     private ProgressDialog dialog;
     private ProductDetailContract.Presenter presenter;
     private Unbinder unbinder;
@@ -72,11 +72,11 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
     public ProductDetailFragment() {
     }
 
-    public static ProductDetailFragment newInstance(String productId) {
+    public static ProductDetailFragment newInstance(int productId) {
 
         ProductDetailFragment fragment = new ProductDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PRODUCT_ID, productId);
+        args.putInt(ARG_PRODUCT_ID, productId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,18 +86,15 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            productId = getArguments().getString(ARG_PRODUCT_ID);
+            productId = getArguments().getInt(ARG_PRODUCT_ID);
         }
         getActivity().setTitle(R.string.app_name);
-
-        presenter.start();
-        presenter.getProduct(productId);
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        presenter.start();
     }
 
     @Override
@@ -105,7 +102,6 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_product_detail, container, false);
         unbinder = ButterKnife.bind(this, view);
-
 
         return view;
     }
@@ -169,19 +165,19 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
                 productSale.setText(product.underSale ?
                     getActivity().getString(R.string.product_on_sale) : "");
 
-                ImageLoader imageLoader = ImageLoader.getInstance();
-                imageLoader.loadImage(product.imgUrl, new SimpleImageLoadingListener() {
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                        if (loadedImage != null) {
-                            productImageView.setImageBitmap(loadedImage);
-                        } else {
-                            Toast.makeText(getActivity(), "Cannot loaded", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                Picasso.with(getActivity())
+                    .load(product.imgUrl)
+                    .placeholder(R.drawable.place_holder)
+                    .error(R.drawable.place_holder)
+                    .into(productImageView);
+
             }
         });
+    }
+
+    @Override
+    public void showProductAddedToCart() {
+        showMessage("Product is added to cart");
     }
 
     @Override
@@ -207,7 +203,6 @@ public class ProductDetailFragment extends Fragment implements ProductDetailCont
 
     @OnClick(R.id.addCardButton)
     public void onAddCartClicked(View view) {
-        Toast.makeText(getContext(), "Added", Toast.LENGTH_SHORT).show();
         presenter.addToCart(currentProduct);
     }
 

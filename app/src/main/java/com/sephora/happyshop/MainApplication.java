@@ -18,9 +18,6 @@ package com.sephora.happyshop;
 
 import android.app.Application;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -40,11 +37,6 @@ public class MainApplication extends Application {
                 .build();
 
         Realm.setDefaultConfiguration(realmConfiguration);
-
-        ImageLoaderConfiguration imageLoaderConfiguration = new ImageLoaderConfiguration.Builder(this)
-			.build();
-        ImageLoader.getInstance().init(imageLoaderConfiguration);
-
     }
 
     @Override

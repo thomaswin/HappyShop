@@ -31,7 +31,14 @@ public class Product extends RealmObject {
     public Product() {
     }
 
-    public Product(int id, String name, String category, double price, String imgUrl, String description, boolean underSale) {
+    public Product(int id,
+                   String name,
+                   String category,
+                   double price,
+                   String imgUrl,
+                   String description,
+                   boolean underSale) {
+
         this.id             = id;
         this.name           = name;
         this.category       = category;

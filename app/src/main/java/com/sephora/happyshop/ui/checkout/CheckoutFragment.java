@@ -3,7 +3,6 @@ package com.sephora.happyshop.ui.checkout;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -22,18 +21,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.sephora.happyshop.R;
 import com.sephora.happyshop.common.LogUtils;
 import com.sephora.happyshop.common.logger.Log;
 import com.sephora.happyshop.data.Product;
 import com.sephora.happyshop.ui.custom.EmptyRecyclerView;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,13 +47,14 @@ public class CheckoutFragment extends Fragment implements
     @BindView(R.id.empty_view)
     View emptyView;
 
-    @BindView(R.id.totalTextView)
+    @BindView(R.id.itemSizeTextView)
     TextView totalTextView;
 
     private EmptyRecyclerView productListView;
     private LinearLayoutManager layoutManager;
     private ProductPaymentAdaper productAdapter;
-    private List<Product> products = new ArrayList<>();
+    private List<ProductInCart> productInCarts = new ArrayList<>();
+
     private CheckoutContract.Presenter presenter;
 
     public CheckoutFragment() {
@@ -107,12 +108,12 @@ public class CheckoutFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_checkout, container, false);
         ButterKnife.bind(this, view);
 
-        productListView = view.findViewById(R.id.productListView);
+        productListView = (EmptyRecyclerView) view.findViewById(R.id.productListView);
         productListView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity());
         productListView.setLayoutManager(layoutManager);
 
-        productAdapter = new ProductPaymentAdaper(products);
+        productAdapter = new ProductPaymentAdaper(productInCarts);
         productListView.setAdapter(productAdapter);
         productListView.addItemDecoration(new ProductDividerItemDecoration(getActivity()));
         productListView.setEmptyView(emptyView);
@@ -145,22 +146,34 @@ public class CheckoutFragment extends Fragment implements
     public void showCartInfo(List<Product> data) {
         Log.d(TAG, "showCartInfo : " + data.toString());
 
-        products.clear();
-        products.addAll(data);
+
+        productInCarts.clear();
+        double total = 0;
+
+        Map<Integer, ProductInCart> productInCartMap = new HashMap<>();
+
+        for (Product product : data) {
+            total += product.price;
+
+            if (productInCartMap.containsKey(product.id)) {
+                productInCartMap.get(product.id).items++;
+            } else {
+                productInCartMap.put(product.id, new ProductInCart(product));
+            }
+        }
+
+        productInCarts.addAll(new ArrayList<>(productInCartMap.values()));
+
+        final double finalTotal = total;
 
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 productAdapter.notifyDataSetChanged();
 
-                double total = 0;
-                for (Product product : products) {
-                    total += product.price;
-                }
-
                 Locale locale = new Locale("en", "SG");
                 NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
-                String displayMoney = currencyFormatter.format(total);
+                String displayMoney = currencyFormatter.format(finalTotal);
                 totalTextView.setText(displayMoney);
             }
         });
@@ -185,11 +198,20 @@ public class CheckoutFragment extends Fragment implements
         });
     }
 
+    public class ProductInCart {
+        int items = 1;
+        Product product;
+
+        public ProductInCart(Product product) {
+            this.product = product;
+        }
+    }
+
     public class ProductPaymentAdaper extends RecyclerView.Adapter<ProductPaymentAdaper.ViewHolder> {
 
-        private final List<Product> productList;
+        private final List<ProductInCart> productList;
 
-        public ProductPaymentAdaper(List<Product> productList) {
+        public ProductPaymentAdaper(List<ProductInCart> productList) {
             this.productList = productList;
         }
 
@@ -203,7 +225,9 @@ public class CheckoutFragment extends Fragment implements
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
 
-            Product product = productList.get(position);
+            ProductInCart productInCart = productList.get(position);
+            Product product = productInCart.product;
+
             String name = product.name;
 
             Locale locale = new Locale("en", "SG");
@@ -212,18 +236,15 @@ public class CheckoutFragment extends Fragment implements
 
             holder.nameView.setText(name);
             holder.priceView.setText(displayMoney);
+            holder.itemSizeTextView.setText(productInCart.items +
+                (productInCart.items == 1 ? " item" : " items"));
 
-            ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.loadImage(product.imgUrl, new SimpleImageLoadingListener() {
-                @Override
-                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                    if (loadedImage != null) {
-                        holder.productView.setImageBitmap(loadedImage);
-                    } else {
-                        Toast.makeText(getContext(), "Cannot loaded", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            Picasso.with(getActivity())
+                .load(product.imgUrl)
+                .placeholder(R.drawable.place_holder)
+                .error(R.drawable.place_holder)
+                .into(holder.productView);
+
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -240,15 +261,18 @@ public class CheckoutFragment extends Fragment implements
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
+            public TextView itemSizeTextView;
             public TextView nameView;
             public TextView priceView;
             public ImageView productView;
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                nameView = (TextView) itemView.findViewById(R.id.productNameTextview);
-                priceView = (TextView) itemView.findViewById(R.id.priceTextView);
-                productView = (ImageView) itemView.findViewById(R.id.productImageView);
+
+                nameView            = (TextView) itemView.findViewById(R.id.productNameTextview);
+                priceView           = (TextView) itemView.findViewById(R.id.priceTextView);
+                productView         = (ImageView) itemView.findViewById(R.id.productImageView);
+                itemSizeTextView    = (TextView) itemView.findViewById(R.id.itemSizeTextView);
             }
         }
     }

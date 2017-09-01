@@ -16,6 +16,8 @@
 
 package com.sephora.happyshop.service;
 
+import android.support.annotation.NonNull;
+
 import com.sephora.happyshop.common.LogUtils;
 import com.sephora.happyshop.common.logger.Log;
 import com.sephora.happyshop.data.Product;
@@ -46,7 +48,14 @@ public class CartManager {
         return INSTANCE;
     }
 
-    public void addProductToCard(Product product) {
+    public static void destroyInstance() {
+        INSTANCE = null;
+    }
+
+    public void addProductToCart(@NonNull Product product) {
+
+        Log.d(TAG, "addProductToCart : " + product.toString());
+
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         Product realProduct = realm.copyToRealm(product);

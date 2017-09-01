@@ -30,9 +30,11 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
@@ -55,7 +57,7 @@ public class ProductsPresenterTest {
     private ArgumentCaptor<LoadDataCallback<List<Product>>> loadProductsCallbackCaptor;
 
     @Captor
-    private ArgumentCaptor<List<Product>> showProductsArgumentCaptor;
+    private ArgumentCaptor<ArrayList<Product>> showProductsArgumentCaptor;
 
     private ProductsPresenter productsPresenter;
 
@@ -72,6 +74,12 @@ public class ProductsPresenterTest {
             new Product(1, "Name1", "Category1", 10.00, "image_url1", "Description1", false),
             new Product(2, "Name2", "Category2", 11.00, "image_url2", "Description2", false),
             new Product(3, "Name2", "Category2", 12.00, "image_url3", "Description3", true));
+    }
+
+    @Test
+    public void createPresenter_setsThePresenterToView() {
+        productsPresenter = new ProductsPresenter(productManager, productsView);
+        verify(productsView).setPresenter(productsPresenter);
     }
 
     @Test
@@ -115,9 +123,9 @@ public class ProductsPresenterTest {
         inOrder.verify(productsView).setLoadingIndicator(true);
         inOrder.verify(productsView).setLoadingIndicator(false);
 
-        // TODO argument capture causing exception. need fix
-        // verify(productsView).showProducts(showProductsArgumentCaptor.getValue());
-        // assertTrue(showProductsArgumentCaptor.getValue().size() == 3);
+        ArgumentCaptor<List> showProductsArgumentCaptor = ArgumentCaptor.forClass(List.class);
+        verify(productsView).showProducts(showProductsArgumentCaptor.capture());
+        assertTrue(showProductsArgumentCaptor.getValue().size() == 3);
     }
 
     @Test
@@ -134,6 +142,5 @@ public class ProductsPresenterTest {
         loadProductsCallbackCaptor.getValue().onDataNotAvailable();
 
         verify(productsView).showLoadingProductsError();
-
     }
 }

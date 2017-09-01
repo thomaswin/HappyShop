@@ -6,5 +6,9 @@
     <color name="colorAccent">#c39aef</color>
 
     <color name="dark_gray">#d5ececec</color>
+    <color name="pay_clicked">#66bb6a</color>
+    <color name="pay_focused">#81c784</color>
+    <color name="pay_default">#81c784</color>
+    <color name="total_price">#c78181</color>
 
 </resources>
