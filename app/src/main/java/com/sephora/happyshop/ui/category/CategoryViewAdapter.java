@@ -81,8 +81,8 @@ public class CategoryViewAdapter extends RecyclerView.Adapter<CategoryViewAdapte
             super(view);
 
             this.view = view;
-            nameView    = view.findViewById(R.id.categoryName);
-            imageView   = view.findViewById(R.id.categoryImageView);
+            nameView    = (TextView) view.findViewById(R.id.categoryName);
+            imageView   = (ImageView) view.findViewById(R.id.categoryImageView);
         }
     }
 }

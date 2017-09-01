@@ -82,7 +82,7 @@ public class CategoryFragment extends Fragment implements CategoryContract.View 
         View view = inflater.inflate(R.layout.fragment_category_list, container, false);
 
         Context context = view.getContext();
-        recyclerView = view.findViewById(R.id.list);
+        recyclerView = (EmptyRecyclerView) view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         viewAdapter = new CategoryViewAdapter(categories, new OnCategoryFragmentListener() {

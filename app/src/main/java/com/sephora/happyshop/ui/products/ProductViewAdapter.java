@@ -1,39 +1,36 @@
 /*
- *  Copyright 2017, Tun Lin
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ *  *  Copyright 2017, Tun Lin
+ *  *
+ *  *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  you may not use this file except in compliance with the License.
+ *  *  You may obtain a copy of the License at
+ *  *
+ *  *  http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  *  Unless required by applicable law or agreed to in writing, software
+ *  *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  See the License for the specific language governing permissions and
+ *  *  limitations under the License.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
  */
 
 package com.sephora.happyshop.ui.products;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.sephora.happyshop.R;
 import com.sephora.happyshop.common.logger.Log;
 import com.sephora.happyshop.data.Product;
 import com.sephora.happyshop.ui.products.ProductsFragment.OnProductsFragmentListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -78,22 +75,11 @@ public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.
         holder.onSaleView.setText(product.underSale ? context.getString(R.string.product_on_sale) : "");
         holder.productImageView.setImageBitmap(null);
 
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.loadImage(product.imgUrl, new SimpleImageLoadingListener() {
-            @Override
-            public void onLoadingComplete(String imageUri, View view, final Bitmap loadedImage) {
-
-                // TODO if Product has same image url, likely to have problem with subsequent image loading
-                holder.productImageView.setImageBitmap(loadedImage);
-
-                final Animation fadeIn = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
-                holder.productImageView.startAnimation(fadeIn);
-            }
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                holder.productImageView.setImageResource(R.drawable.place_holder);
-            }
-        });
+        Picasso.with(context)
+            .load(product.imgUrl)
+            .placeholder(R.drawable.place_holder)
+            .error(R.drawable.place_holder)
+            .into(holder.productImageView);
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,10 +111,10 @@ public class ProductViewAdapter extends RecyclerView.Adapter<ProductViewAdapter.
             super(view);
 
             this.view           = view;
-            nameView            = view.findViewById(R.id.productName);
-            productImageView    = view.findViewById(R.id.productImageView);
-            priceView           = view.findViewById(R.id.priceTextView);
-            onSaleView          = view.findViewById(R.id.saleTextView);
+            nameView            = (TextView) view.findViewById(R.id.productName);
+            productImageView    = (ImageView) view.findViewById(R.id.productImageView);
+            priceView           = (TextView) view.findViewById(R.id.priceTextView);
+            onSaleView          = (TextView) view.findViewById(R.id.saleTextView);
         }
 
         @Override

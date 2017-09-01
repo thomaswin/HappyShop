@@ -51,6 +51,10 @@ public class ProductManager implements ProductsDataSource {
         return INSTANCE;
     }
 
+    public static void destroyInstance() {
+        INSTANCE = null;
+    }
+
     private ProductManager(@NonNull ProductsDataSource tasksRemoteDataSource) {
         productsDataSource = checkNotNull(tasksRemoteDataSource);
     }
@@ -76,7 +80,6 @@ public class ProductManager implements ProductsDataSource {
                                       @Nullable final Integer page,
                                       @NonNull final LoadDataCallback<List<Product>> callback) {
         checkNotNull(callback);
-
         Task.callInBackground(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -90,7 +93,6 @@ public class ProductManager implements ProductsDataSource {
                     @Override
                     public void onDataNotAvailable() {
                         callback.onDataNotAvailable();
-
                     }
                 });
                 return null;
@@ -99,7 +101,7 @@ public class ProductManager implements ProductsDataSource {
     }
 
     @Override
-    public void getProduct(@NonNull final String productId, @NonNull final LoadDataCallback<Product> callback) {
+    public void getProduct(@NonNull final int productId, @NonNull final LoadDataCallback<Product> callback) {
         checkNotNull(callback);
 
         Task.callInBackground(new Callable<Void>() {
@@ -124,7 +126,5 @@ public class ProductManager implements ProductsDataSource {
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    public void getClearAllProducts() {
 
-    }
 }

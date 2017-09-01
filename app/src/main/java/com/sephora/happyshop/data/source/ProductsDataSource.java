@@ -26,15 +26,13 @@ import java.util.List;
 
 public interface ProductsDataSource {
 
-
-
     void getProductCategories(@NonNull LoadDataCallback<List<Category>> callback);
 
     void getProductsByCategory(@NonNull String name,
                                @Nullable Integer page,
                                @NonNull LoadDataCallback<List<Product>> callback);
 
-    void getProduct(@NonNull String productId,
+    void getProduct(@NonNull int productId,
                     @NonNull LoadDataCallback<Product> callback);
 
 }

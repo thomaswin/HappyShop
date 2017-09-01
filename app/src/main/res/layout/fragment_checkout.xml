@@ -14,7 +14,9 @@
             android:id="@+id/productListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"/>
+            tools:listitem="@layout/list_item_product"
+
+            />
 
         <LinearLayout
             android:id="@+id/empty_view"
@@ -46,29 +48,30 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginBottom="20dp"
+        android:layout_margin="20dp"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="horizontal"
         android:showDividers="middle">
 
         <TextView
-            android:id="@+id/totalTextView"
+            android:id="@+id/itemSizeTextView"
             style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="S$0.00"
-            android:textColor="#2d2d2d"/>
+            android:textColor="@color/total_price"/>
 
         <Button
             android:id="@+id/checkOutButton"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/pay_click"
             android:text="PAY"
-
-            />
+            android:textColor="@android:color/white"/>
 
     </LinearLayout>
 </LinearLayout>

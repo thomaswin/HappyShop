@@ -128,7 +128,7 @@ public class ApiEndpoint implements ProductsDataSource {
     }
 
     @Override
-    public void getProduct(@NonNull String productId, @NonNull LoadDataCallback<Product> callback) {
+    public void getProduct(@NonNull int productId, @NonNull LoadDataCallback<Product> callback) {
         try {
             OkHttpClient client = new OkHttpClient()
                 .newBuilder()

@@ -65,9 +65,9 @@ public class ActivityBase extends AppCompatActivity {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Consumer<Boolean>() {
             @Override
-            public void accept(Boolean aBoolean) throws Exception {
-                isConnected = aBoolean;
-                if (!aBoolean) {
+            public void accept(Boolean connectionStatus) throws Exception {
+                isConnected = connectionStatus;
+                if (!connectionStatus) {
                     snakbar = Snackbar.make(findViewById(android.R.id.content),
                         "No connection", Snackbar.LENGTH_INDEFINITE);
                     snakbar.show();
